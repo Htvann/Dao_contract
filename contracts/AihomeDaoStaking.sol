@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
-
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+pragma solidity ^0.8.9;
 
 interface IAIHomesDao {
     function profilesLength() external returns (uint256 length);
@@ -17,14 +17,12 @@ interface IAIHomesDao {
 
 contract AihomeDaoStaking is Pausable, Ownable {
     //NOTE: testnet
-
-    address constant HOMES = 0x8402c360a9C1C9214D870c00835450899bC4F318;
-    address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
+    // address constant HOMES = 0x8402c360a9C1C9214D870c00835450899bC4F318;
+    // address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
 
     //NOTE: local
-
-    // address constant HOMES = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512;
-    // address constant AIHomesDao = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
+    address constant HOMES = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512;
+    address constant AIHomesDao = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
 
     address public accountReceiveTicketPrice;
     address public accountReceiveStaking;
