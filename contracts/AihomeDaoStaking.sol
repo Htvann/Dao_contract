@@ -2,12 +2,11 @@
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 pragma solidity ^0.8.9;
 
 interface IAIHomesDao {
-    function profilesLength() external returns (uint256 length);
-    function isOwnDao(address by) external returns (bool);
+    function profilesLength() external view returns (uint256 length);
+    function isOwnDao(address by) external view returns (bool);
     function profilesById(
         uint256 _id
     )
@@ -17,12 +16,12 @@ interface IAIHomesDao {
 
 contract AihomeDaoStaking is Pausable, Ownable {
     //NOTE: testnet
-    // address constant HOMES = 0x8402c360a9C1C9214D870c00835450899bC4F318;
-    // address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
+    address constant HOMES = 0x8402c360a9C1C9214D870c00835450899bC4F318;
+    address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
 
     //NOTE: local
-    address constant HOMES = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
-    address constant AIHomesDao = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
+    // address constant HOMES = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+    // address constant AIHomesDao = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
 
     address public accountReceiveTicketPrice;
     address public accountReceiveStaking;
@@ -70,13 +69,13 @@ contract AihomeDaoStaking is Pausable, Ownable {
 
     function joinDao(uint256 _id, string memory _name) public whenNotPaused {
         ProfileMember memory info;
-        require(isMemberDao[msg.sender] == false, "you are a member of dao");
-        require(IAIHomesDao(AIHomesDao).isOwnDao(msg.sender)==false, 'you are owner dao');
+        require(isMemberDao[msg.sender] == false, "You are a member of dao");
+        require(IAIHomesDao(AIHomesDao).isOwnDao(msg.sender)==false, 'You are owner dao');
         require(isExistName[_name] == false, "Name already exist");
         require(bytes(_name).length > 0, "Invalid name");
         require(
             _id <= IAIHomesDao(AIHomesDao).profilesLength(),
-            "dao id does not exist"
+            "Dao id does not exist"
         );
         (, , , uint256 _option) = IAIHomesDao(AIHomesDao).profilesById(_id);
 
@@ -152,5 +151,11 @@ contract AihomeDaoStaking is Pausable, Ownable {
         address add = getAddressDaoById[_id][_index];
         ProfileMember memory member = profileMemberDao[add];
         return member;
+    }
+
+    function isReadyToMember(address _address) public view returns (bool){
+        bool isOwnDao = IAIHomesDao(AIHomesDao).isOwnDao(_address);
+        bool isMember = isMemberDao[_address];
+        return isOwnDao && isMember;
     }
 }

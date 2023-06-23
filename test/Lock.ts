@@ -51,6 +51,7 @@ describe("Test Contract", function () {
       ContractSwap.address,
       ethers.constants.MaxUint256
     );
+
     await BUSD.connect(owner2).approve(
       ContractSwap.address,
       ethers.constants.MaxUint256
@@ -122,12 +123,14 @@ describe("Test Contract", function () {
       ethers.constants.MaxUint256
     );
 
-    await StakeDao.connect(owner2).joinDao(1, "ddd");
-    console.log(await StakeDao.isExistName("ddd"));
+    const check = await StakeDao.isReadyToMember(owner.address);
+    console.log("check", check);
+    // await StakeDao.connect(owner2).joinDao(1, "ddd");
+    // console.log(await StakeDao.isExistName("ddd"));
     // console.log(await StakeDao.profileDaoById(1));
-    await StakeDao.connect(owner2).leaveDao();
-    console.log(await StakeDao.getInfoMemberById(1, 1));
-    console.log(await StakeDao.isExistName("ddd"));
+    // await StakeDao.connect(owner2).leaveDao();
+    // console.log(await StakeDao.getInfoMemberById(1, 1));
+    // console.log(await StakeDao.isExistName("ddd"));
     // console.log(await StakeDao.profileDaoById(1));
   });
 });
