@@ -7,7 +7,7 @@ pragma solidity ^0.8.9;
 
 interface IAIHomesDao {
     function profilesLength() external returns (uint256 length);
-
+    function isOwnDao(address by) external returns (bool);
     function profilesById(
         uint256 _id
     )
@@ -21,8 +21,8 @@ contract AihomeDaoStaking is Pausable, Ownable {
     // address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
 
     //NOTE: local
-    address constant HOMES = 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512;
-    address constant AIHomesDao = 0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0;
+    address constant HOMES = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
+    address constant AIHomesDao = 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9;
 
     address public accountReceiveTicketPrice;
     address public accountReceiveStaking;
@@ -34,6 +34,7 @@ contract AihomeDaoStaking is Pausable, Ownable {
 
     struct ProfileMember {
         uint256 id;
+        string name;
         uint256 daoId;
         address addressUser;
         uint256 amountStaking;
@@ -46,8 +47,9 @@ contract AihomeDaoStaking is Pausable, Ownable {
     mapping(address => bool) public isMemberDao;
     mapping(uint256 => ProfileDao) public profileDaoById;
     mapping(uint256 => mapping(uint256 => address)) private getAddressDaoById;
+    mapping(string => bool) public isExistName;
 
-    event JoinDao(address by, uint256 timestamp, uint256 amount, uint256 idDao);
+    event JoinDao(address by,string name, uint256 timestamp, uint256 amount, uint256 idDao);
     event LeaveDao(address by, uint256 timeJoinDao, uint256 idDao);
 
     constructor(
@@ -66,9 +68,12 @@ contract AihomeDaoStaking is Pausable, Ownable {
         _unpause();
     }
 
-    function joinDao(uint256 _id) public whenNotPaused {
+    function joinDao(uint256 _id, string memory _name) public whenNotPaused {
         ProfileMember memory info;
         require(isMemberDao[msg.sender] == false, "you are a member of dao");
+        require(IAIHomesDao(AIHomesDao).isOwnDao(msg.sender)==false, 'you are owner dao');
+        require(isExistName[_name] == false, "Name already exist");
+        require(bytes(_name).length > 0, "Invalid name");
         require(
             _id <= IAIHomesDao(AIHomesDao).profilesLength(),
             "dao id does not exist"
@@ -104,6 +109,7 @@ contract AihomeDaoStaking is Pausable, Ownable {
 
         info.addressUser = msg.sender;
         info.daoId = _id;
+        info.name = _name;
         info.amountStaking = priceStake;
         info.timeJoinDao = block.timestamp;
         info.status = "active";
@@ -114,7 +120,8 @@ contract AihomeDaoStaking is Pausable, Ownable {
         profileMemberDao[msg.sender] = info;
         getAddressDaoById[_id][info.id] = msg.sender;
 
-        emit JoinDao(msg.sender, block.timestamp, priceStake, _id);
+        isExistName[_name] = true;
+        emit JoinDao(msg.sender, _name, block.timestamp, priceStake, _id);
     }
 
     function leaveDao() public whenNotPaused {
@@ -134,6 +141,7 @@ contract AihomeDaoStaking is Pausable, Ownable {
         info.status = "inActive";
         info.timeLeaveDao = block.timestamp;
 
+        isExistName[profileMemberDao[msg.sender].name] = false;
         emit LeaveDao(msg.sender, block.timestamp, info.timeLeaveDao);
     }
 
