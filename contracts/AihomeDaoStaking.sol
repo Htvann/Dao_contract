@@ -153,9 +153,9 @@ contract AihomeDaoStaking is Pausable, Ownable {
         return member;
     }
 
-    function isReadyToMember(address _address) public view returns (bool){
+    function isMemberOrOwner(address _address) public view returns (bool){
         bool isOwnDao = IAIHomesDao(AIHomesDao).isOwnDao(_address);
         bool isMember = isMemberDao[_address];
-        return isOwnDao && isMember;
+        return isOwnDao || isMember;
     }
 }
