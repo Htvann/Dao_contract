@@ -16,8 +16,8 @@ interface IAIHomesDao {
 
 contract AihomeDaoStaking is Pausable, Ownable {
     //NOTE: testnet
-    address constant HOMES = 0x8402c360a9C1C9214D870c00835450899bC4F318;
-    address constant AIHomesDao = 0xf355A894C449D81570E5C4B7da43Ca266987808c;
+    address constant HOMES = 0x75B85fAb647032F5CE71437a8e18831734acC975;
+    address constant AIHomesDao = 0xbFE24856D544e6C42a60D5bA308338Dc98Be7cb2;
 
     //NOTE: local
     // address constant HOMES = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
@@ -50,6 +50,7 @@ contract AihomeDaoStaking is Pausable, Ownable {
 
     event JoinDao(address by,string name, uint256 timestamp, uint256 amount, uint256 idDao);
     event LeaveDao(address by, uint256 timeJoinDao, uint256 idDao);
+    event Staking(address by, uint256 timeStaking, uint256 idDao, uint256 amount);
 
     constructor(
         address _accountReceiveTicketPrice,
@@ -123,6 +124,24 @@ contract AihomeDaoStaking is Pausable, Ownable {
         emit JoinDao(msg.sender, _name, block.timestamp, priceStake, _id);
     }
 
+    function staking (uint256 _amount) public whenNotPaused{
+        require(isMemberDao[msg.sender] == true, "You are not a member of dao");
+        require(
+            IERC20(HOMES).balanceOf(msg.sender) >= _amount,
+            "not enough money to staking"
+        );
+        IERC20(HOMES).transferFrom(
+            msg.sender,
+            accountReceiveTicketPrice,
+           _amount 
+        );
+
+        profileDaoById[profileMemberDao[msg.sender].daoId]
+            .totalStake += _amount;
+        profileMemberDao[msg.sender].amountStaking += _amount;
+        emit Staking(msg.sender, block.timestamp, profileMemberDao[msg.sender].daoId, _amount);
+    }
+
     function leaveDao() public whenNotPaused {
         ProfileMember storage info = profileMemberDao[msg.sender];
         require(isMemberDao[msg.sender] == true, "you are not a member of dao");
@@ -138,6 +157,7 @@ contract AihomeDaoStaking is Pausable, Ownable {
 
         isMemberDao[msg.sender] = false;
         info.status = "inActive";
+        info.amountStaking = 0;
         info.timeLeaveDao = block.timestamp;
 
         isExistName[profileMemberDao[msg.sender].name] = false;

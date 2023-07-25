@@ -2,19 +2,19 @@ import { DeployFunction } from "hardhat-deploy/types";
 import { getNamedAccounts, deployments, ethers } from "hardhat";
 
 const deployFunction: DeployFunction = async () => {
-  const BUSD = await ethers.getContractFactory("BUSD");
+  // const BUSD = await ethers.getContractFactory("BUSD");
 
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy("AIHomesDAO", {
+  /* await deploy("AIHomesDAO", {
     contract: "AIHomesDAO",
     from: deployer,
     args: [deployer, deployer],
     log: true,
-  });
+  }); */
 
-  console.log(BUSD);
+  // console.log(BUSD);
   console.log("---------------------get name token----------------------");
 };
 

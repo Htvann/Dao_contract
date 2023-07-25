@@ -5,17 +5,18 @@ const deployFunction: DeployFunction = async () => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy("BUSD", {
+  /* await deploy("BUSD", {
     contract: "BUSD",
     from: deployer,
     log: true,
-  });
+  }); */
 
-  await deploy("HOMES", {
-    contract: "HOMES",
+  /* await deploy("PPP", {
+    contract: "Contract",
     from: deployer,
     log: true,
-  });
+    args: ["PPP", "ppp"],
+  }); */
 
   console.log("---------------------deploy token----------------------");
 };
